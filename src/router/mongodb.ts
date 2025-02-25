@@ -1,5 +1,5 @@
 import express from "express"
-import { findDocuments, insertDocuments, updateDocuments } from "@/api/mongodb/hooks"
+import * as dbhook from "@/api/mongodb/hooks"
 import { type TypeUser, type _weak_TypeUser, UserRole, UserStatus } from "@/api/mongodb/types"
 const router = express.Router()
 
@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
 })
 
 router.get("/find", (req, res) => {
-    findDocuments({})
+    dbhook.findDocuments({})
     res.send("Mongodb Find Function")
 })
 
@@ -25,7 +25,7 @@ router.post("/insert", (req, res) => {
         status: UserStatus.Registered,
         role: UserRole.Admin
     }
-    insertDocuments(userparam)
+    dbhook.insertDocuments(userparam)
     res.send("Mongodb Insert Function")
 })
 
@@ -39,8 +39,16 @@ router.post("/update", (req, res) => {
             "user_info.email": "Default@qq.com"
         }
     }
-    updateDocuments(userFindParam, updateParam)
+    dbhook.updateDocuments(userFindParam, updateParam)
     res.send("Mongodb Update Function")
 })
 
+router.post("/delete", (req, res) => {
+    // default test data
+    const userFindParam: _weak_TypeUser = {
+        account: "Applelive4"
+    }
+    dbhook.deleteDocuments(userFindParam)
+    res.send("Mongodb Delete Function")
+})
 export default router
