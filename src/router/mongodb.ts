@@ -1,6 +1,6 @@
 import express from "express"
-import { findDocuments, insertDocuments } from "@/api/mongodb/hooks"
-import { type TypeUser, UserRole, UserStatus } from "@/api/mongodb/types"
+import { findDocuments, insertDocuments, updateDocuments } from "@/api/mongodb/hooks"
+import { type TypeUser, type _weak_TypeUser, UserRole, UserStatus } from "@/api/mongodb/types"
 const router = express.Router()
 
 router.get("/", (req, res) => {
@@ -27,6 +27,20 @@ router.post("/insert", (req, res) => {
     }
     insertDocuments(userparam)
     res.send("Mongodb Insert Function")
+})
+
+router.post("/update", (req, res) => {
+    // default test data
+    const userFindParam: _weak_TypeUser = {
+        account: "admin"
+    }
+    const updateParam: _weak_TypeUser = {
+        $set: {
+            "user_info.email": "Default@qq.com"
+        }
+    }
+    updateDocuments(userFindParam, updateParam)
+    res.send("Mongodb Update Function")
 })
 
 export default router
