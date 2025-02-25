@@ -7,6 +7,7 @@ import { mongodbRespone, mongodbResponeHandle } from "@/api/mongodb/types"
 export const updateDocuments = async (query: any, update: any): Promise<mongodbRespone<any>> => {
     const url = Mongodb_global.url
     const client = new MongoClient(url)
+    let result_result = true
 
     try {
         await client.connect()
@@ -22,9 +23,13 @@ export const updateDocuments = async (query: any, update: any): Promise<mongodbR
             { upsert: false }
         )
 
+        if (result.matchedCount === 0 || result.modifiedCount === 0) {
+            result_result = false
+        }
+
         // 返回处理
         return mongodbResponeHandle(
-            true,
+            result_result,
             `匹配到${result.matchedCount}个文档, 更新${result.modifiedCount}个文档`,
             result
         )
