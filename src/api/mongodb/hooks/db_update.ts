@@ -4,7 +4,7 @@ import Mongodb_global from "../global/constant"
 
 //. 数据库返回处理
 import { mongodbRespone, mongodbResponeHandle } from "@/api/mongodb/types"
-export const updateDocuments = async (query: any, update: any) => {
+export const updateDocuments = async (query: any, update: any): Promise<mongodbRespone<any>> => {
     const url = Mongodb_global.url
     const client = new MongoClient(url)
 
@@ -22,12 +22,18 @@ export const updateDocuments = async (query: any, update: any) => {
             { upsert: false }
         )
 
-        // 数据处理
-        console.log(
-            `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`
+        // 返回处理
+        return mongodbResponeHandle(
+            true,
+            `匹配到${result.matchedCount}个文档, 更新${result.modifiedCount}个文档`,
+            result
         )
     } catch (error) {
-        console.log("Failed to connect to MongoDB", error)
+        if (error instanceof Error) {
+            throw mongodbResponeHandle(false, "插入错误", error.message)
+        } else {
+            throw mongodbResponeHandle(false, "插入错误", "未知错误")
+        }
     } finally {
         await client.close()
         console.log("Connection to MongoDB closed")

@@ -27,7 +27,8 @@ app.use(function (
     res.status(500).json({
         errortip: "路由发生了错误!",
         errormsg: err.message,
-        result: false
+        result: false,
+        error: err
     })
 })
 
