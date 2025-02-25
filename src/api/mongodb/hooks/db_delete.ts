@@ -11,9 +11,10 @@ export const deleteDocuments = async (query: any): Promise<mongodbRespone<any>> 
     try {
         await client.connect()
         console.log("Successfully connected to MongoDB")
-
         const db = client.db(process.env.DB_NAME)
         const collection = db.collection(process.env.DB_COLLECTION as string)
+
+        // 数据处理
         const result = await collection.deleteOne(query)
         let result_msg = ""
         // 返回处理

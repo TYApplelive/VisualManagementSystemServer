@@ -30,14 +30,13 @@ router.get("/find", async (req, res, next) => {
 
         // ! 一定要注意使用await等待函数执行完毕
         const result = await dbhook.findDocuments(query)
-
         res.send(routerResponeHandle("查询路由执行结果", true, result))
     } catch (error) {
         next(error)
     }
 })
 
-router.post("/insert", (req, res) => {
+router.post("/insert", async (req, res) => {
     // userparam 由 前端传入
     const { user } = req.body
     // uuid
@@ -52,11 +51,11 @@ router.post("/insert", (req, res) => {
         status: UserStatus.Registered,
         role: UserRole.Admin
     }
-    dbhook.insertDocuments(userparam)
-    res.send("Mongodb Insert Function")
+    const result = await dbhook.insertDocuments(userparam)
+    res.send(routerResponeHandle("插入路由执行结果", true, result))
 })
 
-router.post("/update", (req, res) => {
+router.post("/update", async (req, res) => {
     const { findParam, updateParam } = req.body
     const userFindParam: _weak_TypeUser = {
         ...findParam
@@ -64,16 +63,16 @@ router.post("/update", (req, res) => {
     const updateParams: _weak_TypeUser = {
         ...updateParam
     }
-    dbhook.updateDocuments(userFindParam, updateParams)
-    res.send("Mongodb Update Function")
+    const result = await dbhook.updateDocuments(userFindParam, updateParams)
+    res.send(routerResponeHandle("更新路由执行结果", true, result))
 })
 
-router.post("/delete", (req, res) => {
+router.post("/delete", async (req, res) => {
     const { findParam } = req.body
     const userFindParam: _weak_TypeUser = {
         ...findParam
     }
-    dbhook.deleteDocuments(userFindParam)
-    res.send("Mongodb Delete Function")
+    const result = await dbhook.deleteDocuments(userFindParam)
+    res.send(routerResponeHandle("删除路由执行结果", true, result))
 })
 export default router
