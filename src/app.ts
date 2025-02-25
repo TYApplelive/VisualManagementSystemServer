@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3000
 
 app.use(express.json()) // 解析Json请求体
 app.use(express.urlencoded({ extended: true })) // 解析urlencoded请求体
-app.use(cors()) // 允许跨域请求
 
 import indexRouter from "@/router"
 import mongodbrouter from "@/router/mongodb"
