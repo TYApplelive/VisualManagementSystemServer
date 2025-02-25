@@ -3,8 +3,9 @@ import "tsconfig-paths/register"
 import express from "express"
 import cors from "cors"
 // . 路由 引入
-import indexRouter from "@/router"
-import mongodbrouter from "@/router/mongodb"
+import indexRouter from "@/router/routes/website"
+import mongodbRouter from "@/router/routes/mongodb"
+import monitorRouter from "@/router/routes/monitor"
 
 const app = express()
 
@@ -14,8 +15,9 @@ app.use(express.json()) // 解析Json请求体
 app.use(express.urlencoded({ extended: true })) // 解析urlencoded请求体
 
 // 路由处理中间件
-app.use("/", indexRouter)
-app.use("/mongodb", mongodbrouter)
+app.use("/", indexRouter) // 网站路由
+app.use("/mongodb", mongodbRouter) // 数据库路由
+app.use("/monitor", monitorRouter) // 监控路由
 
 // 全局错误中间件
 app.use(function (
