@@ -1,6 +1,8 @@
 //. 查找功能
 import { MongoClient } from "mongodb"
 import Mongodb_global from "../global/constant"
+
+//. 数据库返回处理
 import { mongodbRespone, mongodbResponeHandle } from "@/api/mongodb/types"
 
 export const findDocuments = async (query: any): Promise<mongodbRespone<any>> => {
@@ -18,8 +20,9 @@ export const findDocuments = async (query: any): Promise<mongodbRespone<any>> =>
         // 查询函数
         const cursor = collection.find(query)
 
+        const matchnum = await collection.countDocuments(query)
         // 数据处理
-        if ((await collection.countDocuments(query)) === 0) {
+        if (matchnum === 0) {
             return mongodbResponeHandle(true, "查询成功,无匹配对象")
         }
 
@@ -28,11 +31,8 @@ export const findDocuments = async (query: any): Promise<mongodbRespone<any>> =>
             datas.push(doc)
         }
 
-        return mongodbResponeHandle(
-            true,
-            `查询成功,匹配到${collection.countDocuments}条数据`,
-            datas
-        )
+        const message = `查询成功,匹配到${matchnum}条数据`
+        return mongodbResponeHandle(true, message, datas)
     } catch (error) {
         // console.log("Failed to connect to MongoDB", error)
         return mongodbResponeHandle(false, "查询失败")

@@ -2,6 +2,8 @@
 import { MongoClient } from "mongodb"
 import Mongodb_global from "../global/constant"
 
+//. 数据库返回处理
+import { mongodbRespone, mongodbResponeHandle } from "@/api/mongodb/types"
 export const deleteDocuments = async (query: any) => {
     const url = Mongodb_global.url
     const client = new MongoClient(url)

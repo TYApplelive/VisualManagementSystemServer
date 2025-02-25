@@ -5,7 +5,6 @@ import cors from "cors"
 // . 路由 引入
 import indexRouter from "@/router"
 import mongodbrouter from "@/router/mongodb"
-import { error } from "console"
 
 const app = express()
 
@@ -28,7 +27,7 @@ app.use(function (
     res.status(500).json({
         errortip: "路由发生了错误!",
         errormsg: err.message,
-        errorstack: err.stack
+        result: false
     })
 })
 

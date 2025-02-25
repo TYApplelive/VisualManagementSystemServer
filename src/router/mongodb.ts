@@ -6,8 +6,8 @@ import { type TypeUser, type _weak_TypeUser, UserRole, UserStatus } from "@/api/
 import moment from "moment"
 import { v7 as uuidv7 } from "uuid"
 
-// . Hook
-import { routerResponeHandle, routerRespone } from "@/router/hooks"
+// . 路由返回处理
+import { routerResponeHandle } from "@/router/types"
 
 const router = express.Router()
 
@@ -15,22 +15,23 @@ router.get("/", (req, res) => {
     res.send("Mongodb Router!")
 })
 
-router.get("/find", (req, res, next) => {
+router.get("/find", async (req, res, next) => {
     try {
         const { account } = req.query
-        let query: any
 
+        // 数据检验
         if (account === undefined) {
-            throw new Error("参数错误")
+            throw new Error("查询路由传入参数错误")
         }
 
-        if (account) {
-            query = { account }
+        let query = {
+            account
         }
 
-        // console.log("传入查找数据:", query)
-        const result = dbhook.findDocuments(query)
-        res.send(routerResponeHandle("查询成功", true, result))
+        // ! 一定要注意使用await等待函数执行完毕
+        const result = await dbhook.findDocuments(query)
+
+        res.send(routerResponeHandle("查询路由执行结果", true, result))
     } catch (error) {
         next(error)
     }
