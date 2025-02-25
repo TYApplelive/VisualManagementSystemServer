@@ -36,43 +36,54 @@ router.get("/find", async (req, res, next) => {
     }
 })
 
-router.post("/insert", async (req, res) => {
-    // userparam 由 前端传入
-    const { user } = req.body
-    // uuid
-    const id = uuidv7()
-    // create_date
-    const create_time = moment().format("YYYY-MM-DD HH:mm:ss")
-    // userparam
-    const userparam: TypeUser = {
-        ...user,
-        create_time,
-        id,
-        status: UserStatus.Registered,
-        role: UserRole.Admin
+router.post("/insert", async (req, res, next) => {
+    try {
+        const { user } = req.body
+        // uuid
+        const id = uuidv7()
+        // create_date
+        const create_time = moment().format("YYYY-MM-DD HH:mm:ss")
+        // userparam
+        const userparam: TypeUser = {
+            ...user,
+            create_time,
+            id,
+            status: UserStatus.Registered,
+            role: UserRole.Admin
+        }
+        const result = await dbhook.insertDocuments(userparam)
+        res.send(routerResponeHandle("插入路由执行结果", true, result))
+    } catch (error) {
+        next(error)
     }
-    const result = await dbhook.insertDocuments(userparam)
-    res.send(routerResponeHandle("插入路由执行结果", true, result))
 })
 
-router.post("/update", async (req, res) => {
-    const { findParam, updateParam } = req.body
-    const userFindParam: _weak_TypeUser = {
-        ...findParam
+router.post("/update", async (req, res, next) => {
+    try {
+        const { findParam, updateParam } = req.body
+        const userFindParam: _weak_TypeUser = {
+            ...findParam
+        }
+        const updateParams: _weak_TypeUser = {
+            ...updateParam
+        }
+        const result = await dbhook.updateDocuments(userFindParam, updateParams)
+        res.send(routerResponeHandle("更新路由执行结果", true, result))
+    } catch (error) {
+        next()
     }
-    const updateParams: _weak_TypeUser = {
-        ...updateParam
-    }
-    const result = await dbhook.updateDocuments(userFindParam, updateParams)
-    res.send(routerResponeHandle("更新路由执行结果", true, result))
 })
 
-router.post("/delete", async (req, res) => {
-    const { findParam } = req.body
-    const userFindParam: _weak_TypeUser = {
-        ...findParam
+router.post("/delete", async (req, res, next) => {
+    try {
+        const { findParam } = req.body
+        const userFindParam: _weak_TypeUser = {
+            ...findParam
+        }
+        const result = await dbhook.deleteDocuments(userFindParam)
+        res.send(routerResponeHandle("删除路由执行结果", true, result))
+    } catch (error) {
+        next()
     }
-    const result = await dbhook.deleteDocuments(userFindParam)
-    res.send(routerResponeHandle("删除路由执行结果", true, result))
 })
 export default router
