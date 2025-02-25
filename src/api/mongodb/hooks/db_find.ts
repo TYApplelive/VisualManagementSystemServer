@@ -12,7 +12,7 @@ export const findDocuments = async (query: any) => {
         console.log("Successfully connected to MongoDB")
 
         const db = client.db(process.env.DB_NAME)
-        const collection = db.collection(process.env.DB_COLLECTION as string)
+        const collection = db.collection<TypeUser>(process.env.DB_COLLECTION as string)
 
         const cursor = collection.find<TypeUser>(query) // 全部查询
 
