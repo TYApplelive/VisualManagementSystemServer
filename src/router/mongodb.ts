@@ -1,27 +1,53 @@
 import express from "express"
 import * as dbhook from "@/api/mongodb/hooks"
 import { type TypeUser, type _weak_TypeUser, UserRole, UserStatus } from "@/api/mongodb/types"
+
+// . 三方库
+import moment from "moment"
+import { v7 as uuidv7 } from "uuid"
+
+// . Hook
+import { routerResponeHandle, routerRespone } from "@/router/hooks"
+
 const router = express.Router()
 
 router.get("/", (req, res) => {
     res.send("Mongodb Router!")
 })
 
-router.get("/find", (req, res) => {
-    dbhook.findDocuments({})
-    res.send("Mongodb Find Function")
+router.get("/find", (req, res, next) => {
+    try {
+        const { account } = req.query
+        let query: any
+
+        if (account === undefined) {
+            throw new Error("参数错误")
+        }
+
+        if (account) {
+            query = { account }
+        }
+
+        // console.log("传入查找数据:", query)
+        const result = dbhook.findDocuments(query)
+        res.send(routerResponeHandle("查询成功", true, result))
+    } catch (error) {
+        next(error)
+    }
 })
 
 router.post("/insert", (req, res) => {
-    // default test data
+    // userparam 由 前端传入
+    const { user } = req.body
+    // uuid
+    const id = uuidv7()
+    // create_date
+    const create_time = moment().format("YYYY-MM-DD HH:mm:ss")
+    // userparam
     const userparam: TypeUser = {
-        account: "admin",
-        password: "123456",
-        user_info: {
-            email: "admin@qq.com"
-        },
-        create_time: "2023-01-01",
-        id: "1",
+        ...user,
+        create_time,
+        id,
         status: UserStatus.Registered,
         role: UserRole.Admin
     }
@@ -30,23 +56,21 @@ router.post("/insert", (req, res) => {
 })
 
 router.post("/update", (req, res) => {
-    // default test data
+    const { findParam, updateParam } = req.body
     const userFindParam: _weak_TypeUser = {
-        account: "admin"
+        ...findParam
     }
-    const updateParam: _weak_TypeUser = {
-        $set: {
-            "user_info.email": "Default@qq.com"
-        }
+    const updateParams: _weak_TypeUser = {
+        ...updateParam
     }
-    dbhook.updateDocuments(userFindParam, updateParam)
+    dbhook.updateDocuments(userFindParam, updateParams)
     res.send("Mongodb Update Function")
 })
 
 router.post("/delete", (req, res) => {
-    // default test data
+    const { findParam } = req.body
     const userFindParam: _weak_TypeUser = {
-        account: "Applelive4"
+        ...findParam
     }
     dbhook.deleteDocuments(userFindParam)
     res.send("Mongodb Delete Function")

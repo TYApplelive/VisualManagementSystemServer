@@ -1,7 +1,6 @@
 //. 查找功能
 import { MongoClient } from "mongodb"
 import Mongodb_global from "../global/constant"
-import type { TypeUser } from "../types"
 
 export const deleteDocuments = async (query: any) => {
     const url = Mongodb_global.url
@@ -12,7 +11,7 @@ export const deleteDocuments = async (query: any) => {
         console.log("Successfully connected to MongoDB")
 
         const db = client.db(process.env.DB_NAME)
-        const collection = db.collection<TypeUser>(process.env.DB_COLLECTION as string)
+        const collection = db.collection(process.env.DB_COLLECTION as string)
         const result = await collection.deleteOne(query)
 
         if (result.deletedCount === 1) {

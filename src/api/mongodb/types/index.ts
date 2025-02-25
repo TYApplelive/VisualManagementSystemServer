@@ -52,3 +52,8 @@ export interface _weak_TypeUser {
     role?: UserRole
     [key: string]: any
 }
+
+/**
+ * mongodb hooks return
+ */
+export * from "./db_return"
