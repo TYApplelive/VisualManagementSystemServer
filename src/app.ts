@@ -8,7 +8,7 @@ import mongodbRouter from "@/router/routes/mongodb"
 import monitorRouter from "@/router/routes/monitor"
 
 //. Socket服务器
-import server from "@/api/monitor/listen"
+import * as server from "@/api/monitor"
 
 const app = express()
 
@@ -37,11 +37,8 @@ app.use(function (
     })
 })
 
-// 开启数据监听服务器
-const SERVER_PORT = process.env.SERVER_PORT || 2008
-server.listen(SERVER_PORT, () => {
-    console.log(`数据监听服务器开启成功,端口为${SERVER_PORT}`)
-})
+// 开启mqtt客户端
+server.mqtt.connectMqttClient("test")
 
 // 开启Express监听
 const PORT = process.env.PORT || 2007
