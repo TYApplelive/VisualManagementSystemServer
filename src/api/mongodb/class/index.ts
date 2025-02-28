@@ -2,13 +2,13 @@ import { DataBaseUrl, DataBaseUrlArray } from "@/api/mongodb/global/constant"
 import { mongodbRespone } from "@/api/mongodb/types"
 import * as mongodb from "@/api/mongodb/hooks"
 
-class DataBaseClinet {
-    private url: DataBaseUrl
+abstract class DataBaseClinet {
+    protected url: DataBaseUrl
     constructor(url: DataBaseUrl) {
         this.url = url
     }
 
-    private getDatabaseName(): string | void {
+    protected getDatabaseName(): string | void {
         switch (this.url) {
             case DataBaseUrl.UserUrl:
                 return process.env.DB_USER_DATABASE_NAME
@@ -20,7 +20,7 @@ class DataBaseClinet {
         }
     }
 
-    private getCollectionName(): string | void {
+    protected getCollectionName(): string | void {
         switch (this.url) {
             case DataBaseUrl.UserUrl:
                 return process.env.DB_USER_COLLECTION
@@ -32,7 +32,18 @@ class DataBaseClinet {
         }
     }
 
-    public async find(query: any): Promise<mongodbRespone<any>> {
+    abstract find(query?: any, limit?: number): Promise<mongodbRespone<any>>
+    abstract insert(query: any): Promise<mongodbRespone<any>>
+    abstract delete(query: any): Promise<mongodbRespone<any>>
+    abstract update(query: any, update: any): Promise<mongodbRespone<any>>
+}
+
+class UserDataBaseClinet extends DataBaseClinet {
+    constructor() {
+        super(DataBaseUrl.UserUrl)
+    }
+
+    public override async find(query: any): Promise<mongodbRespone<any>> {
         const dbName = this.getDatabaseName()
         const collectionName = this.getCollectionName()
         const url = DataBaseUrlArray[this.url]
@@ -43,7 +54,7 @@ class DataBaseClinet {
         return await mongodb.findDocuments(dbName, collectionName, url, query)
     }
 
-    public async insert(query: any): Promise<mongodbRespone<any>> {
+    public override async insert(query: any): Promise<mongodbRespone<any>> {
         const dbName = this.getDatabaseName()
         const collectionName = this.getCollectionName()
         const url = DataBaseUrlArray[this.url]
@@ -54,7 +65,7 @@ class DataBaseClinet {
         return await mongodb.insertDocuments(dbName, collectionName, url, query)
     }
 
-    public async delete(query: any): Promise<mongodbRespone<any>> {
+    public override async delete(query: any): Promise<mongodbRespone<any>> {
         const dbName = this.getDatabaseName()
         const collectionName = this.getCollectionName()
         const url = DataBaseUrlArray[this.url]
@@ -65,7 +76,7 @@ class DataBaseClinet {
         return await mongodb.deleteDocuments(dbName, collectionName, url, query)
     }
 
-    public async update(query: any, update: any): Promise<mongodbRespone<any>> {
+    public override async update(query: any, update: any): Promise<mongodbRespone<any>> {
         const dbName = this.getDatabaseName()
         const collectionName = this.getCollectionName()
         const url = DataBaseUrlArray[this.url]
@@ -77,5 +88,55 @@ class DataBaseClinet {
     }
 }
 
-export const UserDBClinet = new DataBaseClinet(DataBaseUrl.UserUrl)
-export const DeviceDBClinet = new DataBaseClinet(DataBaseUrl.DeviceUrl)
+class DeviceDataBaseClinet extends DataBaseClinet {
+    constructor() {
+        super(DataBaseUrl.UserUrl)
+    }
+
+    public override async find(limit: number, query: any): Promise<mongodbRespone<any>> {
+        const dbName = this.getDatabaseName()
+        const collectionName = this.getCollectionName()
+        const url = DataBaseUrlArray[this.url]
+
+        if (!dbName || !collectionName || !url)
+            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
+
+        return await mongodb.findDocuments(dbName, collectionName, url, query, limit)
+    }
+
+    public override async insert(query: any): Promise<mongodbRespone<any>> {
+        const dbName = this.getDatabaseName()
+        const collectionName = this.getCollectionName()
+        const url = DataBaseUrlArray[this.url]
+
+        if (!dbName || !collectionName || !url)
+            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
+
+        return await mongodb.insertDocuments(dbName, collectionName, url, query)
+    }
+
+    public override async delete(query: any): Promise<mongodbRespone<any>> {
+        const dbName = this.getDatabaseName()
+        const collectionName = this.getCollectionName()
+        const url = DataBaseUrlArray[this.url]
+
+        if (!dbName || !collectionName || !url)
+            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
+
+        return await mongodb.deleteDocuments(dbName, collectionName, url, query)
+    }
+
+    public override async update(query: any, update: any): Promise<mongodbRespone<any>> {
+        const dbName = this.getDatabaseName()
+        const collectionName = this.getCollectionName()
+        const url = DataBaseUrlArray[this.url]
+
+        if (!dbName || !collectionName || !url)
+            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
+
+        return await mongodb.updateDocuments(dbName, collectionName, url, query, update)
+    }
+}
+
+export const UserDBClinet = new UserDataBaseClinet()
+export const DeviceDBClinet = new DeviceDataBaseClinet()

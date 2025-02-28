@@ -1,15 +1,32 @@
 //. 查找功能
 import { MongoClient } from "mongodb"
-
 //. 数据库返回处理
 import { mongodbRespone, mongodbResponeHandle } from "@/api/mongodb/types"
 
-export const findDocuments = async (
+export async function findDocuments(
     dbName: string,
     collectionName: string,
     url: string,
     query?: any
-): Promise<mongodbRespone<any>> => {
+): Promise<mongodbRespone<any>>
+
+export async function findDocuments(
+    dbName: string,
+    collectionName: string,
+    url: string,
+    limit: number,
+    skip: number,
+    query?: any
+): Promise<mongodbRespone<any>>
+
+export async function findDocuments(
+    dbName: string,
+    collectionName: string,
+    url: string,
+    limit?: number,
+    skip?: number,
+    query?: any
+): Promise<mongodbRespone<any>> {
     const client = new MongoClient(url)
     let datas = []
 
@@ -19,8 +36,15 @@ export const findDocuments = async (
         const db = client.db(dbName)
         const collection = db.collection(collectionName)
 
+        let cursor = null
         // 查询函数
-        const cursor = collection.find(query)
+        if (limit !== undefined && skip !== undefined) {
+            cursor = collection.find(query).skip(skip).limit(limit)
+        } else if (limit !== undefined) {
+            cursor = collection.find(query).limit(limit)
+        } else {
+            cursor = collection.find(query)
+        }
         const matchnum = await collection.countDocuments(query)
 
         // 数据处理
