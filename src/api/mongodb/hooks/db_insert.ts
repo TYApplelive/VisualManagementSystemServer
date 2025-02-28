@@ -1,6 +1,5 @@
 //. 插入功能
 import { MongoClient } from "mongodb"
-import * as Mongodb_global from "../global/constant"
 
 //. 数据库返回处理
 import { mongodbRespone, mongodbResponeHandle } from "@/api/mongodb/types"
