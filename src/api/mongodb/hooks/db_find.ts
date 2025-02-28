@@ -1,20 +1,24 @@
 //. 查找功能
 import { MongoClient } from "mongodb"
-import Mongodb_global from "../global/constant"
+import * as Mongodb_global from "../global/constant"
 
 //. 数据库返回处理
 import { mongodbRespone, mongodbResponeHandle } from "@/api/mongodb/types"
 
-export const findDocuments = async (query?: any): Promise<mongodbRespone<any>> => {
-    const url = Mongodb_global.url
+export const findDocuments = async (
+    dbName: string,
+    collectionName: string,
+    url: string,
+    query?: any
+): Promise<mongodbRespone<any>> => {
     const client = new MongoClient(url)
     let datas = []
 
     try {
         await client.connect()
         console.log("Successfully connected to MongoDB")
-        const db = client.db(process.env.DB_USER_DATABASE_NAME)
-        const collection = db.collection(process.env.DB_USER_COLLECTION as string)
+        const db = client.db(dbName)
+        const collection = db.collection(collectionName)
 
         // 查询函数
         const cursor = collection.find(query)

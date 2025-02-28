@@ -1,5 +1,5 @@
 import express from "express"
-import * as dbhook from "@/api/mongodb/hooks"
+import { UserDBClinet } from "@/api/mongodb/class"
 import { type TypeUser, type _weak_TypeUser, UserRole, UserStatus } from "@/api/mongodb/types"
 
 // . 三方库
@@ -29,7 +29,7 @@ router.get("/find", async (req, res, next) => {
         }
 
         // ! 一定要注意使用await等待函数执行完毕
-        const result = await dbhook.findDocuments(query)
+        const result = await UserDBClinet.find(query)
         res.send(routerResponeHandle("查询路由执行结果", true, result))
     } catch (error) {
         next(error)
@@ -51,7 +51,7 @@ router.post("/insert", async (req, res, next) => {
             status: UserStatus.Registered,
             role: UserRole.Admin
         }
-        const result = await dbhook.insertDocuments(userparam)
+        const result = await UserDBClinet.insert(userparam)
         res.send(routerResponeHandle("插入路由执行结果", true, result))
     } catch (error) {
         next(error)
@@ -67,7 +67,7 @@ router.post("/update", async (req, res, next) => {
         const updateParams: _weak_TypeUser = {
             ...updateParam
         }
-        const result = await dbhook.updateDocuments(userFindParam, updateParams)
+        const result = await UserDBClinet.update(userFindParam, updateParams)
         res.send(routerResponeHandle("更新路由执行结果", true, result))
     } catch (error) {
         next()
@@ -80,7 +80,7 @@ router.post("/delete", async (req, res, next) => {
         const userFindParam: _weak_TypeUser = {
             ...findParam
         }
-        const result = await dbhook.deleteDocuments(userFindParam)
+        const result = await UserDBClinet.delete(userFindParam)
         res.send(routerResponeHandle("删除路由执行结果", true, result))
     } catch (error) {
         next()
