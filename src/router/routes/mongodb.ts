@@ -24,7 +24,7 @@ router.get("/find", async (req, res, next) => {
             throw new Error("查询路由传入参数错误")
         }
 
-        let query = {
+        const query = {
             account
         }
 

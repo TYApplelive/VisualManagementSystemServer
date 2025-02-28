@@ -12,7 +12,7 @@ export const updateDocuments = async (query: any, update: any): Promise<mongodbR
     try {
         await client.connect()
         console.log("Successfully connected to MongoDB")
-        const db = client.db(process.env.DB_USER_NAME)
+        const db = client.db(process.env.DB_USER_DATABASE_NAME)
         const collection = db.collection(process.env.DB_USER_COLLECTION as string)
 
         // 数据处理

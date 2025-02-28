@@ -5,7 +5,7 @@ import Mongodb_global from "../global/constant"
 //. 数据库返回处理
 import { mongodbRespone, mongodbResponeHandle } from "@/api/mongodb/types"
 
-export const findDocuments = async (query: any): Promise<mongodbRespone<any>> => {
+export const findDocuments = async (query?: any): Promise<mongodbRespone<any>> => {
     const url = Mongodb_global.url
     const client = new MongoClient(url)
     let datas = []
@@ -13,7 +13,7 @@ export const findDocuments = async (query: any): Promise<mongodbRespone<any>> =>
     try {
         await client.connect()
         console.log("Successfully connected to MongoDB")
-        const db = client.db(process.env.DB_USER_NAME)
+        const db = client.db(process.env.DB_USER_DATABASE_NAME)
         const collection = db.collection(process.env.DB_USER_COLLECTION as string)
 
         // 查询函数
