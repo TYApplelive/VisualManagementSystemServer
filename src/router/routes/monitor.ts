@@ -16,4 +16,13 @@ router.get("/start", (req, res) => {
     // TODO 开启MQTT客户端
 })
 
+// . 用于获取数据库数据的API
+router.get("/getdata", (req, res) => {
+    const { limit } = req.params
+    console.log(limit)
+
+    // TODO 验证身份
+    // 数据库查询数据
+})
+
 export default router
