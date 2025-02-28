@@ -38,7 +38,7 @@ app.use(function (
 })
 
 // 开启mqtt客户端
-server.mqtt.connectMqttClient("test")
+// server.mqtt.connectMqttClient("test")
 
 // 开启Express监听
 const PORT = process.env.PORT || 2007
