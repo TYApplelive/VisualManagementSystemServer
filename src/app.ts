@@ -7,8 +7,8 @@ import indexRouter from "@/router/routes/website"
 import mongodbRouter from "@/router/routes/mongodb"
 import monitorRouter from "@/router/routes/monitor"
 
-//. Socket服务器
-import * as server from "@/api/monitor"
+//. API 返回统一格式
+import { routerResponeHandle } from "@/router/types"
 
 const app = express()
 
@@ -29,12 +29,14 @@ app.use(function (
     res: express.Response,
     next: express.NextFunction
 ) {
-    res.status(500).json({
-        errortip: "路由发生了错误!",
-        errormsg: err.message,
-        result: false,
-        error: err
-    })
+    res.status(500).json(
+        routerResponeHandle("API错误", false, {
+            errortip: "路由发生了错误!",
+            errormsg: err.message,
+            result: false,
+            error: err
+        })
+    )
 })
 
 // 开启mqtt客户端
