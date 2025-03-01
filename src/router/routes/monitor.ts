@@ -24,7 +24,7 @@ router.get("/start", (req, res) => {
 // . 用于获取数据库数据的API
 router.get("/db/find", async (req, res, next) => {
     try {
-        const { limit, skip, id } = req.query
+        const { limit, skip, id, address } = req.query
         console.log(Number(limit), Number(skip), id)
         // TODO 验证身份
         // 数据库查询数据
@@ -33,12 +33,18 @@ router.get("/db/find", async (req, res, next) => {
             throw new Error("查询路由传入参数错误:limit")
         }
         let result = null
-        if (id === undefined) {
+        if (id === undefined && address === undefined) {
             console.log("查询全部数据")
             result = await monitor.monitor_find(Number(limit), Number(skip))
         } else {
             console.log("查询指定数据")
-            const query = { id }
+            let query_: Record<string, any> = {}
+            if (id) query_.id = id
+            if (address) query_.address = address
+
+            const query = { $and: [query_] }
+            console.log(query)
+
             result = await monitor.monitor_find(Number(limit), Number(skip), query)
         }
 
