@@ -22,6 +22,18 @@ app.use("/", indexRouter) // 网站路由
 app.use("/mongodb", mongodbRouter) // 数据库路由
 app.use("/monitor", monitorRouter) // 监控路由
 
+// 404 处理中间件
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.status(404).json(
+        routerResponeHandle("API错误", false, {
+            errortip: "请求的资源未找到!",
+            errormsg: `路径 ${req.path} 不存在`,
+            result: false,
+            error: "Not Found"
+        })
+    )
+})
+
 // 全局错误中间件
 app.use(function (
     err: any,
