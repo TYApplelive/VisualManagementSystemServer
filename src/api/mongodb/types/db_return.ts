@@ -11,11 +11,13 @@ export interface mongodbRespone<T> {
 export const mongodbResponeHandle = <T>(
     result?: boolean,
     message?: string,
-    data?: T
+    data?: T,
+    ...other: Record<string, any>[]
 ): mongodbRespone<T> => {
     return {
         result: result || false,
         message: message || "",
-        data
+        data,
+        ...other[0]
     }
 }

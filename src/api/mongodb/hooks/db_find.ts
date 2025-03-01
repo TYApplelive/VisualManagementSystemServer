@@ -59,7 +59,7 @@ export async function findDocuments(
         if (skip) msg += `,跳过${skip}条数据`
 
         // 返回处理
-        return mongodbResponeHandle(true, msg, datas)
+        return mongodbResponeHandle(true, msg, datas, { matchnum })
     } catch (error) {
         if (error instanceof Error) {
             throw mongodbResponeHandle(false, "查询错误", error.message)

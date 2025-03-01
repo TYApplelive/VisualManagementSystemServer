@@ -42,7 +42,6 @@ router.get("/db/find", async (req, res, next) => {
             result = await monitor.monitor_find(Number(limit), Number(skip), query)
         }
 
-        //...
         res.send(routerResponeHandle("查询路由执行结果", true, result))
     } catch (error) {
         next(error)
