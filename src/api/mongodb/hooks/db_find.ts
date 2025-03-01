@@ -14,18 +14,18 @@ export async function findDocuments(
     dbName: string,
     collectionName: string,
     url: string,
+    query: any,
     limit: number,
-    skip: number,
-    query?: any
+    skip: number
 ): Promise<mongodbRespone<any>>
 
 export async function findDocuments(
     dbName: string,
     collectionName: string,
     url: string,
+    query?: any,
     limit?: number,
-    skip?: number,
-    query?: any
+    skip?: number
 ): Promise<mongodbRespone<any>> {
     const client = new MongoClient(url)
     let datas = []
@@ -40,8 +40,6 @@ export async function findDocuments(
         // 查询函数
         if (limit !== undefined && skip !== undefined) {
             cursor = collection.find(query).skip(skip).limit(limit)
-        } else if (limit !== undefined) {
-            cursor = collection.find(query).limit(limit)
         } else {
             cursor = collection.find(query)
         }
@@ -55,8 +53,13 @@ export async function findDocuments(
             datas.push(doc)
         }
 
+        // 返回信息
+        let msg = `查询成功,匹配到${matchnum}条数据`
+        if (limit) msg += `,限制${limit}条数据`
+        if (skip) msg += `,跳过${skip}条数据`
+
         // 返回处理
-        return mongodbResponeHandle(true, `查询成功,匹配到${matchnum}条数据`, datas)
+        return mongodbResponeHandle(true, msg, datas)
     } catch (error) {
         if (error instanceof Error) {
             throw mongodbResponeHandle(false, "查询错误", error.message)

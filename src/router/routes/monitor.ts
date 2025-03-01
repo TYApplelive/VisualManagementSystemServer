@@ -24,8 +24,8 @@ router.get("/start", (req, res) => {
 // . 用于获取数据库数据的API
 router.get("/db/find", async (req, res, next) => {
     try {
-        const { limit, id } = req.query
-        console.log(Number(limit), id)
+        const { limit, skip, id } = req.query
+        console.log(Number(limit), Number(skip), id)
         // TODO 验证身份
         // 数据库查询数据
 
@@ -35,13 +35,11 @@ router.get("/db/find", async (req, res, next) => {
         let result = null
         if (id === undefined) {
             console.log("查询全部数据")
-            result = await monitor.monitor_find(Number(limit))
+            result = await monitor.monitor_find(Number(limit), Number(skip))
         } else {
             console.log("查询指定数据")
             const query = { id }
-            console.log(query)
-
-            result = await monitor.monitor_find(Number(limit), query)
+            result = await monitor.monitor_find(Number(limit), Number(skip), query)
         }
 
         //...

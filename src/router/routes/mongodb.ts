@@ -19,15 +19,12 @@ router.get("/find", async (req, res, next) => {
     try {
         const { account } = req.query
 
-        // 数据检验
-        if (account === undefined) {
-            throw new Error("查询路由传入参数错误")
+        let query = {}
+        if (account) {
+            query = {
+                account
+            }
         }
-
-        const query = {
-            account
-        }
-
         // ! 一定要注意使用await等待函数执行完毕
         const result = await UserDBClinet.find(query)
         res.send(routerResponeHandle("查询路由执行结果", true, result))

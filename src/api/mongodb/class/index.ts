@@ -2,7 +2,7 @@ import { DataBaseUrl, DataBaseUrlArray } from "@/api/mongodb/global/constant"
 import { mongodbRespone } from "@/api/mongodb/types"
 import * as mongodb from "@/api/mongodb/hooks"
 
-abstract class DataBaseClinet {
+class DataBaseClinet {
     protected url: DataBaseUrl
     constructor(url: DataBaseUrl) {
         this.url = url
@@ -32,10 +32,49 @@ abstract class DataBaseClinet {
         }
     }
 
-    abstract find(query?: any, limit?: number): Promise<mongodbRespone<any>>
-    abstract insert(query: any): Promise<mongodbRespone<any>>
-    abstract delete(query: any): Promise<mongodbRespone<any>>
-    abstract update(query: any, update: any): Promise<mongodbRespone<any>>
+    public async find(query: any, limit: number, skip: number): Promise<mongodbRespone<any>> {
+        const dbName = this.getDatabaseName()
+        const collectionName = this.getCollectionName()
+        const url = DataBaseUrlArray[this.url]
+
+        if (!dbName || !collectionName || !url)
+            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
+
+        return await mongodb.findDocuments(dbName, collectionName, url, query, limit, skip)
+    }
+
+    public async insert(query: any): Promise<mongodbRespone<any>> {
+        const dbName = this.getDatabaseName()
+        const collectionName = this.getCollectionName()
+        const url = DataBaseUrlArray[this.url]
+
+        if (!dbName || !collectionName || !url)
+            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
+
+        return await mongodb.insertDocuments(dbName, collectionName, url, query)
+    }
+
+    public async delete(query: any): Promise<mongodbRespone<any>> {
+        const dbName = this.getDatabaseName()
+        const collectionName = this.getCollectionName()
+        const url = DataBaseUrlArray[this.url]
+
+        if (!dbName || !collectionName || !url)
+            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
+
+        return await mongodb.deleteDocuments(dbName, collectionName, url, query)
+    }
+
+    public async update(query: any, update: any): Promise<mongodbRespone<any>> {
+        const dbName = this.getDatabaseName()
+        const collectionName = this.getCollectionName()
+        const url = DataBaseUrlArray[this.url]
+
+        if (!dbName || !collectionName || !url)
+            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
+
+        return await mongodb.updateDocuments(dbName, collectionName, url, query, update)
+    }
 }
 
 class UserDataBaseClinet extends DataBaseClinet {
@@ -43,7 +82,7 @@ class UserDataBaseClinet extends DataBaseClinet {
         super(DataBaseUrl.UserUrl)
     }
 
-    public override async find(query: any): Promise<mongodbRespone<any>> {
+    public async find(query: any): Promise<mongodbRespone<any>> {
         const dbName = this.getDatabaseName()
         const collectionName = this.getCollectionName()
         const url = DataBaseUrlArray[this.url]
@@ -53,88 +92,11 @@ class UserDataBaseClinet extends DataBaseClinet {
 
         return await mongodb.findDocuments(dbName, collectionName, url, query)
     }
-
-    public override async insert(query: any): Promise<mongodbRespone<any>> {
-        const dbName = this.getDatabaseName()
-        const collectionName = this.getCollectionName()
-        const url = DataBaseUrlArray[this.url]
-
-        if (!dbName || !collectionName || !url)
-            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
-
-        return await mongodb.insertDocuments(dbName, collectionName, url, query)
-    }
-
-    public override async delete(query: any): Promise<mongodbRespone<any>> {
-        const dbName = this.getDatabaseName()
-        const collectionName = this.getCollectionName()
-        const url = DataBaseUrlArray[this.url]
-
-        if (!dbName || !collectionName || !url)
-            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
-
-        return await mongodb.deleteDocuments(dbName, collectionName, url, query)
-    }
-
-    public override async update(query: any, update: any): Promise<mongodbRespone<any>> {
-        const dbName = this.getDatabaseName()
-        const collectionName = this.getCollectionName()
-        const url = DataBaseUrlArray[this.url]
-
-        if (!dbName || !collectionName || !url)
-            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
-
-        return await mongodb.updateDocuments(dbName, collectionName, url, query, update)
-    }
 }
 
 class DeviceDataBaseClinet extends DataBaseClinet {
     constructor() {
-        super(DataBaseUrl.UserUrl)
-    }
-
-    public override async find(limit: number, query: any): Promise<mongodbRespone<any>> {
-        const dbName = this.getDatabaseName()
-        const collectionName = this.getCollectionName()
-        const url = DataBaseUrlArray[this.url]
-
-        if (!dbName || !collectionName || !url)
-            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
-
-        return await mongodb.findDocuments(dbName, collectionName, url, query, limit)
-    }
-
-    public override async insert(query: any): Promise<mongodbRespone<any>> {
-        const dbName = this.getDatabaseName()
-        const collectionName = this.getCollectionName()
-        const url = DataBaseUrlArray[this.url]
-
-        if (!dbName || !collectionName || !url)
-            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
-
-        return await mongodb.insertDocuments(dbName, collectionName, url, query)
-    }
-
-    public override async delete(query: any): Promise<mongodbRespone<any>> {
-        const dbName = this.getDatabaseName()
-        const collectionName = this.getCollectionName()
-        const url = DataBaseUrlArray[this.url]
-
-        if (!dbName || !collectionName || !url)
-            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
-
-        return await mongodb.deleteDocuments(dbName, collectionName, url, query)
-    }
-
-    public override async update(query: any, update: any): Promise<mongodbRespone<any>> {
-        const dbName = this.getDatabaseName()
-        const collectionName = this.getCollectionName()
-        const url = DataBaseUrlArray[this.url]
-
-        if (!dbName || !collectionName || !url)
-            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
-
-        return await mongodb.updateDocuments(dbName, collectionName, url, query, update)
+        super(DataBaseUrl.DeviceUrl)
     }
 }
 
