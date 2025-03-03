@@ -8,6 +8,9 @@ import { routerResponeHandle } from "@/router/types"
 //. Redis
 import { redisClient } from "@/store/redis"
 
+// . monitor types
+import { DeviceType } from "@/api/monitor/types"
+
 const router = express.Router()
 
 router.get("/", (req, res) => {
@@ -63,6 +66,21 @@ router.get("/db/find", async (req, res, next) => {
             await redisClient.setKey(cacheKey, mongodbResult) // 缓存
         }
 
+        res.send(routerResponeHandle("查询路由执行结果", true, mongodbResult))
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.post("/addDevice", async (req, res, next) => {
+    try {
+        const datas: DeviceType = { ...req.body }
+        let mongodbResult = null
+        if (datas) {
+            mongodbResult = await monitor.monitor_insert(datas)
+        }
+        // 清空缓存
+        if (mongodbResult?.result) redisClient.clearCache("device_datas:*")
         res.send(routerResponeHandle("查询路由执行结果", true, mongodbResult))
     } catch (error) {
         next(error)
