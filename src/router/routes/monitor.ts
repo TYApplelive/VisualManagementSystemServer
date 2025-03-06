@@ -63,7 +63,7 @@ router.get("/db/find", async (req, res, next) => {
             console.log(query)
 
             mongodbResult = await monitor.monitor_find(Number(limit), Number(skip ?? 0), query)
-            await redisClient.setKey(cacheKey, mongodbResult, 60) // 缓存 1 分钟
+            await redisClient.setKey(cacheKey, mongodbResult)
         }
 
         res.send(routerResponeHandle("查询路由执行结果", true, mongodbResult))
@@ -87,4 +87,23 @@ router.post("/addDevice", async (req, res, next) => {
     }
 })
 
+router.post("/removeDevices", async (req, res, next) => {
+    try {
+        const dataIds: string[] = req.body
+
+        if (!dataIds.length) {
+            res.send(routerResponeHandle("删除路由执行结果", false, "无删除对象"))
+        }
+
+        let mongodbResult = null
+        if (dataIds) {
+            mongodbResult = await monitor.monitor_remove(dataIds)
+        }
+        // 清空缓存
+        if (mongodbResult?.result) redisClient.clearCache("device_datas:*")
+        res.send(routerResponeHandle("查询路由执行结果", true, mongodbResult))
+    } catch (error) {
+        next(error)
+    }
+})
 export default router

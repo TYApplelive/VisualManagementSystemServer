@@ -58,7 +58,16 @@ class DataBaseClinet {
         const dbName = this.getDatabaseName()
         const collectionName = this.getCollectionName()
         const url = DataBaseUrlArray[this.url]
+        if (!dbName || !collectionName || !url)
+            throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
 
+        return await mongodb.deleteDocument(dbName, collectionName, url, query)
+    }
+
+    public async deleteItems(query: any): Promise<mongodbRespone<any>> {
+        const dbName = this.getDatabaseName()
+        const collectionName = this.getCollectionName()
+        const url = DataBaseUrlArray[this.url]
         if (!dbName || !collectionName || !url)
             throw new Error(`数据库连接信息错误,缺失参数: dbName, collectionName, url`)
 
