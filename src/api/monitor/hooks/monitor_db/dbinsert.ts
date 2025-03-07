@@ -14,18 +14,7 @@ export const monitor_insert = async (query: DeviceType): Promise<mongodbRespone<
     if (query.id === undefined || query.id === "") query.id = uuidv4()
     // 设备创建时间
     query.create_time = moment().format("YYYY-MM-DD HH:mm:ss")
+    query.last_update_time = query.create_time
 
     return await DeviceDBClinet.insert(query)
-}
-
-// 监视器删除设备
-export const monitor_remove = async (DeviceIDs: string[]): Promise<mongodbRespone<any>> => {
-    if (!DeviceIDs) {
-        return mongodbResponeHandle(false, "查询路由传入参数缺失:DeviceIDs")
-    }
-
-    // 处理参数为数据库标准格式
-    const query = { id: { $in: DeviceIDs } }
-    // 删除设备
-    return await DeviceDBClinet.deleteItems(query)
 }

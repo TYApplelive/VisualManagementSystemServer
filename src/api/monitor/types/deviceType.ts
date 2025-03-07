@@ -6,6 +6,7 @@ export interface DeviceType {
     ip: string
     address: string
     create_time: string
+    last_update_time: string
     EFC?: string //! 暂时是？后面确定后改为确定值
 }
 
