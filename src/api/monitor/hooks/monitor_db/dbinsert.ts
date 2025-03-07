@@ -12,6 +12,8 @@ export const monitor_insert = async (query: DeviceType): Promise<mongodbRespone<
 
     // 判断uuid是否存在
     if (query.id === undefined || query.id === "") query.id = uuidv4()
+    // 判断设备名是否为空
+    if (query.name === undefined || query.name === "") query.name = `Deivce_${query.id}`
     // 设备创建时间
     query.create_time = moment().format("YYYY-MM-DD HH:mm:ss")
     query.last_update_time = query.create_time
