@@ -9,7 +9,7 @@ import { routerResponeHandle } from "@/router/types"
 import { redisClient } from "@/store/redis"
 
 // . monitor types
-import { DeviceType } from "@/api/monitor/types"
+import type { DeviceType, UpdateQueryDeviceType } from "@/api/monitor/types"
 
 const router = express.Router()
 
@@ -75,6 +75,9 @@ router.get("/db/find", async (req, res, next) => {
 router.post("/addDevice", async (req, res, next) => {
     try {
         const datas: DeviceType = { ...req.body }
+
+        console.log(datas)
+
         let mongodbResult = null
         if (datas) {
             mongodbResult = await monitor.monitor_insert(datas)
@@ -98,6 +101,24 @@ router.post("/removeDevices", async (req, res, next) => {
         let mongodbResult = null
         if (dataIds) {
             mongodbResult = await monitor.monitor_remove(dataIds)
+        }
+        // 清空缓存
+        if (mongodbResult?.result) redisClient.clearCache("device_datas:*")
+        res.send(routerResponeHandle("查询路由执行结果", true, mongodbResult))
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.post("/updateDevice", async (req, res, next) => {
+    try {
+        const datas: UpdateQueryDeviceType = { ...req.body }
+        const { findParam, updateParam } = datas
+
+        let mongodbResult = null
+        if (findParam && updateParam) {
+            console.log("findParam ", findParam, " updateParam", updateParam)
+            mongodbResult = await monitor.monitor_update(findParam, updateParam)
         }
         // 清空缓存
         if (mongodbResult?.result) redisClient.clearCache("device_datas:*")

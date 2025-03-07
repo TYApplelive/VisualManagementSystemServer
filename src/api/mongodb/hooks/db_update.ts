@@ -19,10 +19,12 @@ export const updateDocuments = async (
         const db = client.db(dbName)
         const collection = db.collection(collectionName)
 
+        console.log("更新Doc:", query, update)
+
         // 数据处理
         const result = await collection.updateOne(
             query,
-            update,
+            { $set: { ...update } },
             /* 如果没有找到这个待更新文档,则不会插入一个新的文档 */
             { upsert: false }
         )
