@@ -63,7 +63,8 @@ router.get("/db/find", async (req, res, next) => {
             console.log(query)
 
             mongodbResult = await monitor.monitor_find(Number(limit), Number(skip ?? 0), query)
-            await redisClient.setKey(cacheKey, mongodbResult)
+            // 创建缓存
+            await redisClient.setKey(cacheKey, mongodbResult, 60 * 10) // 10 分钟缓存
         }
 
         res.send(routerResponeHandle("查询路由执行结果", true, mongodbResult))
