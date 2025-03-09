@@ -47,7 +47,7 @@ export async function findDocuments(
 
         // 数据处理
         if (matchnum === 0) {
-            return mongodbResponeHandle(true, "查询成功,无匹配对象")
+            return mongodbResponeHandle(false, "查询成功,无匹配对象")
         }
         for await (const doc of cursor) {
             datas.push(doc)
