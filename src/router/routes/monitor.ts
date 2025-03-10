@@ -52,9 +52,9 @@ router.get("/db/find", async (req, res, next) => {
 
         if (redisResult) {
             mongodbResult = redisResult
-            console.log(`缓存key存在 ${cacheKey}`)
+            // console.log(`缓存key存在 ${cacheKey}`)
         } else {
-            console.log(`缓存key不存在 ${cacheKey}`)
+            // console.log(`缓存key不存在 ${cacheKey}`)
             let query_: Record<string, any> = {}
             if (id) query_.id = id
             if (address) query_.address = address

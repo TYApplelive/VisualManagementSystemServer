@@ -1,14 +1,15 @@
 {
-    "name": "server",
+    "name": "back-manager-system-server",
     "version": "1.0.0",
-    "description": "",
+    "description": "后台管理服务器,API服务器",
     "license": "ISC",
     "author": "TY",
-    "type": "module",
-    "main": "app.js",
+    "type": "commonjs",
+    "main": "./src/app.ts",
     "scripts": {
         "start": "npx tsx --env-file=.env --watch  src/app.ts",
-        "format": "prettier --write src/**/*.ts"
+        "format": "prettier --write src/**/*.ts",
+        "build": "webpack"
     },
     "dependencies": {
         "@types/cors": "^2.8.17",
