@@ -10,5 +10,5 @@ export enum DataBaseUrl {
 }
 
 // * 数据库URL数组
-// ! 严格于 @ref DataBaseUrl 顺序
+// ! 严格于 @ref DataBaseUrl枚举 顺序
 export const DataBaseUrlArray = [UserUrl, DeviceUrl]

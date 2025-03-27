@@ -86,6 +86,7 @@ class DataBaseClinet {
     }
 }
 
+/*用户数据库接口句柄客户端*/
 class UserDataBaseClinet extends DataBaseClinet {
     constructor() {
         super(DataBaseUrl.UserUrl)
@@ -103,6 +104,7 @@ class UserDataBaseClinet extends DataBaseClinet {
     }
 }
 
+/*设备数据库接口句柄客户端*/
 class DeviceDataBaseClinet extends DataBaseClinet {
     constructor() {
         super(DataBaseUrl.DeviceUrl)

@@ -1,3 +1,5 @@
+// * 本函数用于 监控模块的接口路由
+
 //. 基本路由
 import express from "express"
 import * as monitor from "@/api/monitor/hooks"

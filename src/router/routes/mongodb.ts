@@ -1,3 +1,5 @@
+//* 本文件用于生成 mongodb 数据库相关函数
+
 import express from "express"
 import { UserDBClinet } from "@/api/mongodb/class"
 import { type TypeUser, type _weak_TypeUser, UserRole, UserStatus } from "@/api/mongodb/types"
