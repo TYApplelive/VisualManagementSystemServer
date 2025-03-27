@@ -13,7 +13,7 @@ export const connectMqttClient = (topic: string) => {
 
     mqttClient = mqtt.connect(global.mqttconnectUrl, {
         connectTimeout: 4000,
-        username: "Express"
+        username: "Express服务器"
     })
 
     mqttClient.on("connect", () => {
@@ -49,6 +49,9 @@ export const connectMqttClient = (topic: string) => {
     })
 }
 
+/**
+ * 断开MQTT客户端连接
+ */
 export const disconnectMqttClient = () => {
     if (mqttClient) {
         mqttClient.end()
