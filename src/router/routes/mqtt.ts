@@ -9,7 +9,8 @@ router.get("/", (req, res) => {
 })
 
 router.get("/open", (req, res) => {
-    var topic = process.env.MQTT_TOPIC_Device1
+    var topic = process.env.MQTT_TOPIC_Device
+    // 主题订阅检查
     if (topic == undefined) {
         res.send(routerResponeHandle("Mqtt Topic is undefined!", false))
         return
