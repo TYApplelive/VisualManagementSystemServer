@@ -6,6 +6,7 @@ import cors from "cors"
 import indexRouter from "@/router/routes/website"
 import mongodbRouter from "@/router/routes/mongodb"
 import monitorRouter from "@/router/routes/monitor"
+import mqttRouter from "@/router/routes/mqtt"
 
 //. API 返回统一格式
 import { routerResponeHandle } from "@/router/types"
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true })) // 解析urlencoded请求体
 app.use("/", indexRouter) // 网站路由
 app.use("/mongodb", mongodbRouter) // 数据库路由
 app.use("/monitor", monitorRouter) // 监控路由
+app.use("/mqtt", mqttRouter) // mqtt路由
 
 // 404 处理中间件
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
