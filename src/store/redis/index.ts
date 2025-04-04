@@ -80,6 +80,42 @@ class RedisClient {
             throw error
         }
     }
+
+    //查询相关的Keys
+    public async GetKeys(key: string): Promise<string[]> {
+        try {
+            const keys = await this.redisClient.keys(key)
+            return keys
+        } catch (error) {
+            console.error(`Failed to get keys: ${error}`)
+            throw error
+        }
+    }
+
+    /**
+     * 获取指定模式下的最新消息
+     * @param pattern 键的模式（如 "topic:*"）
+     * @returns 最新消息的键和值，如果没有则返回 null
+     */
+    public async getLatestMessage(pattern: string): Promise<{ key: string; value: string } | null> {
+        try {
+            // 获取所有匹配的键
+            const keys = await this.redisClient.keys(pattern)
+            if (keys.length === 0) {
+                return null
+            }
+
+            // 按时间戳排序，获取最新的键
+            const latestKey = keys.sort().reverse()[0]
+
+            // 获取值
+            const value = await this.getKey(latestKey)
+            return { key: latestKey, value }
+        } catch (error) {
+            console.error(`Failed to get latest message: ${error}`)
+            throw error
+        }
+    }
 }
 
 export const redisClient = new RedisClient({

@@ -2,6 +2,7 @@
 // server.ts
 import mqtt from "mqtt"
 import * as global from "@/api/monitor/global/constant"
+import { redisClient } from "@/store/redis"
 
 let mqttClient: mqtt.MqttClient | null = null
 
@@ -13,7 +14,8 @@ export const connectMqttClient = (topic: string) => {
 
     mqttClient = mqtt.connect(global.mqttconnectUrl, {
         connectTimeout: 4000,
-        username: "Express服务器"
+        username: "Express服务器",
+        protocolVersion: 4 /* 设定MQTT协议版本为3.1*/
     })
 
     mqttClient.on("connect", () => {
@@ -27,15 +29,19 @@ export const connectMqttClient = (topic: string) => {
         })
     })
 
-    mqttClient.on("message", (topic, message) => {
+    mqttClient.on("message", async (topic, message) => {
         console.log(`收到来自主题:\'${topic}\'的消息: ${message.toString()} `)
-        try {
-            const messageString = message.toString()
-            const messageJson = JSON.parse(messageString)
-            const data = { ...messageJson }
-            console.log(`解析得到：\n`, data)
-        } catch (error) {
-            console.error("JSON数据解析失败", error)
+
+        const key = `${topic}:${Date.now()}`
+        const messageString = message.toString()
+        console.log("收到消息:", messageString)
+        // 判断消息类型并存储到redis
+        if (messageString.startsWith("ECHO")) {
+            console.log("收到ECHO消息")
+            const [header, ...data] = messageString.split(",")
+            const [echoPrefix, deviceID] = header.split(":")
+            redisClient.setKey(key, { deviceID, data }, 10)
+            console.log("ECHO消息已保存到Redis")
         }
     })
 
@@ -58,5 +64,16 @@ export const disconnectMqttClient = () => {
         mqttClient = null
     } else {
         console.log("MQTT客户端未连接,无需断开")
+    }
+}
+
+/**
+ * 发布MQTT消息
+ */
+export const publishMqttMessage = (topic: string, message: string) => {
+    if (mqttClient) {
+        mqttClient.publish(topic, message)
+    } else {
+        console.log("MQTT客户端未连接,无法发布消息")
     }
 }
