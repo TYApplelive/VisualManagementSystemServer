@@ -5,20 +5,22 @@ import { routerResponeHandle } from "@/router/types/router_return"
 import { type MqttCmd, type SC7A20Data, LEDCmd, MCUDevices, SC7A20Cmd } from "@/router/types"
 import { redisClient } from "@/store/redis"
 
+const topic_cmd = process.env.MQTT_TOPIC_DEVICE_CMD
+const topic_info = process.env.MQTT_TOPIC_DEVICE_INFO
+
 const router = express.Router()
 router.get("/", (req, res) => {
     res.send(routerResponeHandle("Mqtt Router Test!", true, "Successful!"))
 })
 
 router.get("/open", (req, res) => {
-    var topic = process.env.MQTT_TOPIC_Device
     // 主题订阅检查
-    if (topic == undefined) {
-        res.send(routerResponeHandle("Mqtt Topic is undefined!", false))
+    if (topic_info == undefined) {
+        res.send(routerResponeHandle("Mqtt topic_info is undefined!", false))
         return
     }
     // 打开mqtt客户端并订阅主题
-    mqtt.connectMqttClient(topic)
+    mqtt.connectMqttClient(topic_info)
     res.send(routerResponeHandle("Mqtt Open!", true))
 })
 
@@ -29,73 +31,80 @@ router.get("/close", (req, res) => {
 })
 
 router.get("/led/on", (req, res) => {
-    var topic = process.env.MQTT_TOPIC_Device
     // 主题订阅检查
-    if (topic == undefined) {
-        res.send(routerResponeHandle("Mqtt Topic is undefined!", false))
+    if (topic_cmd == undefined) {
+        res.send(routerResponeHandle("Mqtt topic_cmd is undefined!", false))
         return
     }
     const mqttCMD: MqttCmd = {
         Device: MCUDevices.LED,
         Cmd: LEDCmd.ON
     }
-    mqtt.publishMqttMessage(topic, `${mqttCMD.Device},${mqttCMD.Cmd}`)
+    mqtt.publishMqttMessage(topic_cmd, `${mqttCMD.Device},${mqttCMD.Cmd}`)
     res.send(routerResponeHandle("开启", true))
 })
 
 router.get("/led/off", (req, res) => {
-    var topic = process.env.MQTT_TOPIC_Device
     // 主题订阅检查
-    if (topic == undefined) {
-        res.send(routerResponeHandle("Mqtt Topic is undefined!", false))
+    if (topic_cmd == undefined) {
+        res.send(routerResponeHandle("Mqtt topic_cmd is undefined!", false))
         return
     }
     const mqttCMD: MqttCmd = {
         Device: MCUDevices.LED,
         Cmd: LEDCmd.OFF
     }
-    mqtt.publishMqttMessage(topic, `${mqttCMD.Device},${mqttCMD.Cmd}`)
+    mqtt.publishMqttMessage(topic_cmd, `${mqttCMD.Device},${mqttCMD.Cmd}`)
     res.send(routerResponeHandle("关闭", true))
 })
 
 router.get("/led/blink", (req, res) => {
-    var topic = process.env.MQTT_TOPIC_Device
     // 主题订阅检查
-    if (topic == undefined) {
-        res.send(routerResponeHandle("Mqtt Topic is undefined!", false))
+    if (topic_cmd == undefined) {
+        res.send(routerResponeHandle("Mqtt topic_cmd is undefined!", false))
         return
     }
     const mqttCMD: MqttCmd = {
         Device: MCUDevices.LED,
         Cmd: LEDCmd.BLINK
     }
-    mqtt.publishMqttMessage(topic, `${mqttCMD.Device},${mqttCMD.Cmd}`)
+    mqtt.publishMqttMessage(topic_cmd, `${mqttCMD.Device},${mqttCMD.Cmd}`)
     res.send(routerResponeHandle("闪烁", true))
 })
 
 router.get("/sc7a20/getdata", async (req, res) => {
-    var topic = process.env.MQTT_TOPIC_Device
+    //检查MQTT服务是否开启
+    if (!mqtt.checkMqttConnection()) {
+        res.send(routerResponeHandle("MQTT 服务未开启!", false))
+    }
+
     // 主题订阅检查
-    if (topic == undefined) {
-        res.send(routerResponeHandle("Mqtt Topic is undefined!", false))
+    if (topic_cmd == undefined) {
+        res.send(routerResponeHandle("Mqtt topic_cmd is undefined!", false))
         return
     }
+    if (topic_info == undefined) {
+        res.send(routerResponeHandle("Mqtt topic_info is undefined!", false))
+        return
+    }
+
     const mqttCMD: MqttCmd = {
         Device: MCUDevices.SC7A20,
         Cmd: SC7A20Cmd.GETDATA
     }
     // 发送命令
-    mqtt.publishMqttMessage(topic, `${mqttCMD.Device},${mqttCMD.Cmd}`)
+    mqtt.publishMqttMessage(topic_cmd, `${mqttCMD.Device},${mqttCMD.Cmd}`)
 
     /*从Redis中读取最新的数据 */
     try {
-        const maxWaitTime = 20000
+        const maxWaitTime = 60000 // 60 秒 等待信息
         const startTime = Date.now()
 
         while (Date.now() - startTime < maxWaitTime) {
-            const latestMessage = await redisClient.getLatestMessage(`${topic}:*`)
+            const latestMessage = await redisClient.getLatestMessage(`${topic_cmd}:*`)
             if (latestMessage) {
                 res.send(routerResponeHandle("SC7A20姿态信息", true, latestMessage.value))
+                return
             }
             // 等待一段时间再重试（例如 500 毫秒）
             await new Promise((resolve) => setTimeout(resolve, 500))
@@ -109,17 +118,16 @@ router.get("/sc7a20/getdata", async (req, res) => {
 })
 
 router.get("/sc7a20/calibrate", (req, res) => {
-    var topic = process.env.MQTT_TOPIC_Device
     // 主题订阅检查
-    if (topic == undefined) {
-        res.send(routerResponeHandle("Mqtt Topic is undefined!", false))
+    if (topic_cmd == undefined) {
+        res.send(routerResponeHandle("Mqtt topic_cmd is undefined!", false))
         return
     }
     const mqttCMD: MqttCmd = {
         Device: MCUDevices.SC7A20,
         Cmd: SC7A20Cmd.CALIBRATE
     }
-    mqtt.publishMqttMessage(topic, `${mqttCMD.Device},${mqttCMD.Cmd}`)
+    mqtt.publishMqttMessage(topic_cmd, `${mqttCMD.Device},${mqttCMD.Cmd}`)
     res.send(routerResponeHandle("自调零", true))
 })
 

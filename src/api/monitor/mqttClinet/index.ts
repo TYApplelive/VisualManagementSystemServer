@@ -40,7 +40,7 @@ export const connectMqttClient = (topic: string) => {
             console.log("收到ECHO消息")
             const [header, ...data] = messageString.split(",")
             const [echoPrefix, deviceID] = header.split(":")
-            redisClient.setKey(key, { deviceID, data }, 10)
+            redisClient.setKey(key, { deviceID, data }, 20)
             console.log("ECHO消息已保存到Redis")
         }
     })
@@ -75,5 +75,16 @@ export const publishMqttMessage = (topic: string, message: string) => {
         mqttClient.publish(topic, message)
     } else {
         console.log("MQTT客户端未连接,无法发布消息")
+    }
+}
+
+/**
+ * 检测MQTT连接状态
+ */
+export const checkMqttConnection = () => {
+    if (mqttClient) {
+        return mqttClient.connected
+    } else {
+        return false
     }
 }
