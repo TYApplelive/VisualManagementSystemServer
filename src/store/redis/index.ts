@@ -8,23 +8,23 @@ class RedisClient {
     constructor(options: RedisOptions) {
         this.redisClient = new Redis(options)
 
+        let errorLogged = false
         this.redisClient.on("error", (err) => {
-            console.error('Redis 连接出错:', error);
-            // 这里可以添加更多的错误处理逻辑，比如重试连接
-            // 以下是一个简单的重试示例
-            const retryInterval = 5000; // 重试间隔为 5 秒
-            console.log(`将在 ${retryInterval / 1000} 秒后重试连接...`);
-            setTimeout(() => {
-                console.log('正在重试连接...');
-                // 重新创建 Redis 实例
-                const newRedis = new Redis();
-                newRedis.on('error', (newError) => {
-                    console.error('重试连接仍然出错:', newError);
-                });
-                newRedis.on('connect', () => {
-                    console.log('成功重新连接到 Redis 服务器');
-                });
-            }, retryInterval);
+            if (!errorLogged) {
+                console.error(`Redis连接出错: ${err.message}`)
+                errorLogged = true
+                const retryInterval = 5000 // 重试间隔为 5 秒
+                console.log(`将在 ${retryInterval / 1000} 秒后重试连接...`)
+                setTimeout(() => {
+                    // 重新创建 Redis 实例
+                    const newRedis = new Redis()
+                    newRedis.on("error", (newError) => {})
+                    newRedis.on("connect", () => {
+                        console.log("成功重新连接到 Redis 服务器")
+                        errorLogged = false
+                    })
+                }, retryInterval)
+            }
         })
         // 监听 connect 事件，连接成功时输出日志
         this.redisClient.on("connect", () => {
