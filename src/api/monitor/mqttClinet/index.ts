@@ -40,7 +40,15 @@ export const connectMqttClient = (topic: string) => {
             console.log("收到ECHO消息")
             const [header, ...data] = messageString.split(",")
             const [echoPrefix, deviceID] = header.split(":")
-            redisClient.setKey(key, { deviceID, data }, 20)
+            const parseData = data.reduce(
+                (acc, item) => {
+                    const [key, value] = item.split(":")
+                    acc[key.toLowerCase()] = parseFloat(value)
+                    return acc
+                },
+                {} as { [key: string]: number }
+            )
+            redisClient.setKey(key, { deviceID, ...parseData }, 20)
             console.log("ECHO消息已保存到Redis")
         }
     })

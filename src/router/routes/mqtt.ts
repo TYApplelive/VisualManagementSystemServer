@@ -2,7 +2,7 @@
 import express from "express"
 import * as mqtt from "@/api/monitor/mqttClinet"
 import { routerResponeHandle } from "@/router/types/router_return"
-import { type MqttCmd, type SC7A20Data, LEDCmd, MCUDevices, SC7A20Cmd } from "@/router/types"
+import { type MqttCmd, LEDCmd, MCUDevices, SC7A20Cmd } from "@/router/types"
 import { redisClient } from "@/store/redis"
 
 const topic_cmd = process.env.MQTT_TOPIC_DEVICE_CMD
@@ -101,7 +101,7 @@ router.get("/sc7a20/getdata", async (req, res) => {
         const startTime = Date.now()
 
         while (Date.now() - startTime < maxWaitTime) {
-            const latestMessage = await redisClient.getLatestMessage(`${topic_cmd}:*`)
+            const latestMessage = await redisClient.getLatestMessage(`${topic_info}:*`)
             if (latestMessage) {
                 res.send(routerResponeHandle("SC7A20姿态信息", true, latestMessage.value))
                 return
